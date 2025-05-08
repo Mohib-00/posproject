@@ -113,7 +113,7 @@
                             
                             <div class="col-2 col-md-2 mb-3 d-flex align-items-center">
                               <label style="white-space: nowrap" class="me-2 mb-0">Product Quantity:</label>
-                              <input class="form-control form-control-sm" type="text" id="qty" readonly/> <
+                              <input class="form-control form-control-sm" type="text" id="qty" readonly/> 
                             </div>
                             
                             

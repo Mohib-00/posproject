@@ -265,4 +265,7 @@ Route::post('/complete-sale', [SaleController::class, 'completeSale'])->name('co
 Route::get('/get-product-quantity', [SaleController::class, 'getProductQuantity']);
 //to serch sale list
 Route::get('/sales-list', [SaleController::class, 'salelistsearch'])->name('sales.list');
-
+//to get csh in ahnd
+Route::post('/get-cash-in-hand', [VoucherController::class, 'getCashInHand']);
+//to get account balance
+Route::get('/get-account-balance', [VoucherController::class, 'getAccountBalance']);

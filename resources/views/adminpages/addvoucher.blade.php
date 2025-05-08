@@ -80,7 +80,7 @@
                   <div class="card-header">
                     <a class="user" href="/admin/voucher" onclick="loadvoucher(); return false;">Back</a>
                   </div>
-                  <form id="productssssform">
+                  <form id="voucherform">
                     <div class="card-body">
                       <div class="row">
 
@@ -96,12 +96,21 @@
                         <div class="col-md-6 col-lg-4">
                           <div class="form-group">
                             <label for="defaultSelect">Voucher Type</label>
-                            <select class="form-select form-control" id="vendors" name="vendors">
+                            <select class="form-select form-control" id="vendors" name="voucher_type">
+                              <option>Choose One</option>
                               <option>Cash Payment</option>
                               <option>Cash Receipt</option>
                             </select>
                           </div>
                         </div>
+
+                        <div class="col-md-6 col-lg-4" style="display: none">
+                          <div class="form-group">
+                              <label for="cash_in_hand">Cash In Hand</label>
+                              <input type="number" id="cashinhand" name="cash_in_hand" class="form-control" disabled>
+                              <span id="nameError" class="text-danger"></span>
+                          </div>
+                      </div>
 
                        
 
@@ -113,23 +122,9 @@
                           </div>
                       </div>
 
-                      <div class="col-md-6 col-lg-4">
-                        <div class="form-group">
-                          <label for="defaultSelect">Users Form</label>
-                          <select class="form-select form-control" id="vendors" name="vendors">
-                            <option>User 1</option>
-                            <option>User 2</option>
-                            <option>User 3</option>
-                            <option>User 4</option>
-                            <option>User 5</option>
-                          </select>
-                        </div>
-                      </div>
-                      
-
-                        <div class="col-md-12 col-lg-8">
+                        <div class="col-md-12 col-lg-12">
                           <div class="form-group">
-                            <label for="remarks">Narration</label>
+                            <label for="remarks">Remarks</label>
                             <input class="form-control" type="text" id="remarks" name="remarks" placeholder="Remarks">
                             <span id="nameError" class="text-danger"></span>
                           </div>
@@ -138,62 +133,52 @@
                         <div class="table-responsive mt-3">
                           <table class="table table-bordered" id="productTable">
                             <thead>
-                              <tr>
-                                <th style="background-color: #FFA500; color: white;">Account</th>
-                                <th style="background-color: #FFA500; color: white;">Balance</th>
-                                <th style="background-color: #FFA500; color: white;">Narration</th>
-                                <th style="background-color: #FFA500; color: white;">Amount</th>
-                                <th style="background-color: #FFA500; color: white;">
-                                  <button type="button" class="btn btn-sm btn-light" onclick="addRow()">+</button>
-                                </th>
-                              </tr>
+                                <tr>
+                                    <th style="background-color: #FFA500; color: white;">Account</th>
+                                    <th style="background-color: #FFA500; color: white;">Balance</th>
+                                    <th style="background-color: #FFA500; color: white;">Narration</th>
+                                    <th style="background-color: #FFA500; color: white;">Amount</th>
+                                    <th style="background-color: #FFA500; color: white;">
+                                        <button type="button" class="btn btn-sm btn-light" onclick="addRow()">+</button>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody id="tableBody">
+                                <tr>
+                                    <td style="min-width: 270px; max-width: 300px;">
+                                        <select class="form-select form-control product-select" name="account[]" onchange="updateProductData(this)">
+                                            <option value="">Choose One</option>
+                                            @foreach($accounts as $account)
+                                                <option value="{{ $account->id }}">{{ $account->sub_head_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td style="min-width: 120px; max-width: 120px;">
+                                        <input type="number" name="balance[]" class="form-control balance" disabled>
+                                    </td>
+                                    <td style="min-width: 120px; max-width: 120px;">
+                                        <input type="text" name="narration[]" class="form-control">
+                                    </td>
+                                    <td style="min-width: 120px; max-width: 120px;">
+                                      <input type="number" name="amount[]" class="form-control amount" oninput="calculateTotal()">
+                                  </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
                               <tr>
-                                <td style="min-width: 270px; max-width: 300px;">
-                                  <select class="form-select form-control" name="products[]" onchange="updateProductData(this)">
-                                      <option>Choose One</option>
-                                      {{--@foreach($products as $product)
-                                          <option value="{{ $product->id }}" 
-                                              data-carton-qty="{{ $product->quantity }}"
-                                              data-retail-rate="{{ $product->retail_rate }}"
-                                              data-purchase-rate="{{ $product->purchase_rate }}">
-                                              {{ $product->item_name }}
-                                          </option>
-                                      @endforeach--}}
-                                      <option>1</option>
-                                      <option>2</option>
-                                      <option>3</option>
-                                  </select>
-                              </td>
-                              <td style="min-width: 120px; max-width: 120px;">
-                                <input type="number"  name="balance[]" class="form-control" id="balance" disabled>
-                              </td>
-                              <td style="min-width: 120px; max-width: 120px;">
-                                  <input type="number" name="narration[]" class="form-control" id="narration">
-                              </td>
-                              <td style="min-width: 120px; max-width: 120px;">
-                                  <input type="number" name="amount[]" class="form-control" id="amount">
-                              </td>
-                            
-                              <td>
-                                  <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-                              </td>
-                              </tr>
-                          </tbody>
-                          
-                          </table>
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td>
+                                    <input type="number" class="form-control" id="totalAmount" readonly>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        
                         </div>
-
-                        <div class="col-md-6 col-lg-4">
-                          <div class="form-group">
-                            <label for="remarks">Total </label>
-                            <input class="form-control" type="number" id="total" name="total" disabled>
-                          </div>
-                        </div>
-
-                       
-
                       </div>
                     </div>
                     <div class="card-action">
@@ -214,47 +199,103 @@
     @include('adminpages.ajax')
 
 
-   
-
     <script>
-     
+    $(document).ready(function() {
+    $('#vendors').on('change', function() {
+        let voucherType = $(this).val();
+
+        $.ajax({
+            url: '/get-cash-in-hand',
+            method: 'POST',
+            data: {
+                voucher_type: voucherType,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                $('#cashinhand').val(response.cash_in_hand);
+                $('.col-md-6.col-lg-4[style="display: none"]').show();
+            },
+            error: function(xhr) {
+                console.log(xhr.responseJSON);
+            }
+        });
+    });
+});
   
-      function addRow() {
-          const tableBody = document.getElementById('tableBody');
-          const newRow = document.createElement('tr');
-  
-          newRow.innerHTML = `
-              <td style="min-width: 270px; max-width: 300px;">
-                  <select class="form-select form-control" name="products[]" onchange="updateProductData(this)">
-                      <option>Choose Product</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                  </select>
-              </td>
-             <td style="min-width: 120px; max-width: 120px;">
-                <input type="number"  name="balance[]" class="form-control" id="balance" disabled>
-             </td>
-             <td style="min-width: 120px; max-width: 120px;">
-                <input type="number" name="narration[]" class="form-control" id="narration">
-             </td>
-             <td style="min-width: 120px; max-width: 120px;">
-                <input type="number" name="amount[]" class="form-control" id="amount">
-             </td>
-              <td>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-              </td>
-          `;
-  
-          tableBody.appendChild(newRow);
-      }
-  
-      function removeRow(button) {
-          const row = button.closest('tr');
-          row.remove();
-          calculateTotals(); 
-      }
-  
+function updateProductData(selectElement) {
+    const accountId = selectElement.value;
+    const row = selectElement.closest('tr');
+    const balanceInput = row.querySelector('.balance');
+
+    if (accountId) {
+        $.ajax({
+            url: '/get-account-balance',
+            method: 'GET',
+            data: { account_id: accountId },
+            success: function(response) {
+                if (response.balance !== undefined) {
+                    balanceInput.value = response.balance;
+                } else {
+                    balanceInput.value = "0";
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                balanceInput.value = "0";
+            }
+        });
+    } else {
+        balanceInput.value = "0";
+    }
+}
+
+function calculateTotal() {
+    let total = 0;
+
+    document.querySelectorAll('.amount').forEach(function(input) {
+        const amount = parseFloat(input.value);
+        if (!isNaN(amount)) {
+            total += amount;
+        }
+    });
+
+    document.getElementById('totalAmount').value = total.toFixed(2);
+}
+
+function addRow() {
+    const rowHTML = `
+        <tr>
+            <td>
+                <select class="form-select form-control product-select" name="account[]" onchange="updateProductData(this)">
+                    <option value="">Choose One</option>
+                    @foreach($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->sub_head_name }}</option>
+                    @endforeach
+                </select>
+            </td>
+            <td>
+                <input type="number" name="balance[]" class="form-control balance" disabled>
+            </td>
+            <td>
+                <input type="text" name="narration[]" class="form-control">
+            </td>
+            <td>
+                <input type="number" name="amount[]" class="form-control amount" oninput="calculateTotal()">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+            </td>
+        </tr>
+    `;
+
+    document.getElementById('tableBody').insertAdjacentHTML('beforeend', rowHTML);
+}
+
+function removeRow(button) {
+    const row = button.closest('tr');
+    row.remove();
+    calculateTotal();
+}
 
   </script>
   
