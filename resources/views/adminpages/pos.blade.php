@@ -106,10 +106,16 @@
                             </select>
                             </div>
 
-                            <div class="col-3 col-md-3 mb-3 d-flex align-items-center">
-                              <label class="me-2 mb-0">Product Quantity:</label>
-                              <input class="form-control form-control-sm" type="text" id="qty"/>
+                            <div class="col-2 col-md-2 mb-3 d-flex align-items-center">
+                              <label style="white-space: nowrap" class="me-2 mb-0">Product Name:</label>
+                              <input class="form-control form-control-sm" type="text" id="productName" readonly/>
                             </div>
+                            
+                            <div class="col-2 col-md-2 mb-3 d-flex align-items-center">
+                              <label style="white-space: nowrap" class="me-2 mb-0">Product Quantity:</label>
+                              <input class="form-control form-control-sm" type="text" id="qty" readonly/> <
+                            </div>
+                            
                             
                           
 
@@ -372,6 +378,9 @@ function updateTotals() {
             });
             return;
           }
+
+          $('#qty').val(product.quantity); // Set available quantity in the input
+          $('#productName').val(product.item_name);
 
           var quantity = 1;
           var retailRate = parseFloat(product.retail_rate);
