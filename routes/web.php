@@ -94,6 +94,8 @@ Route::group(['middleware' => ['admin.auth'], 'prefix' => 'admin'], function() {
     Route::get('sale_print_invoice/{id}', [SaleController::class, 'saleprintinvoice'])->name('saleprint.invoice');
     Route::get('add_voucher', [VoucherController::class, 'addvoucher'])->name('voucher');
     Route::get('voucher', [VoucherController::class, 'voucher'])->name('showvoucher');
+        Route::get('voucher_items/{id}', [VoucherController::class, 'voucheritems'])->name('voucher.items');
+
 });
 //to open forgot password page
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');

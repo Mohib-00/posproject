@@ -38,10 +38,11 @@ public function sale()
 }
 
 
- public function voucherItem()
-    {
-        return $this->belongsTo(VoucherItem::class, 'voucher_id','id');
-    }
+public function voucher()
+{
+    return $this->belongsTo(Voucher::class, 'voucher_id', 'id');
+}
+
 
 
 }

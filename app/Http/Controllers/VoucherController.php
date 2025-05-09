@@ -101,6 +101,7 @@ public function store(Request $request)
         $createdAt = $request->created_at ?? now();
         $updatedAt = $request->updated_at ?? $createdAt;
 
+        // Create Voucher
         $voucher = Voucher::create([
             'user_id' => Auth::id(),
             'receiving_location' => $request->receiving_location,
@@ -134,6 +135,7 @@ public function store(Request $request)
             ]);
         }
 
+        // Fetch Cash In Hand Account
         $cashInHandAccount = DB::table('add_accounts')
             ->where('sub_head_name', 'Cash In Hand')
             ->first();
@@ -142,17 +144,19 @@ public function store(Request $request)
             $totalAmount = collect($voucherItems)->sum('amount');
 
             if ($request->voucher_type === 'Cash Payment') {
+                // Insert Cash In Hand as Credit in GRN Accounts
                 DB::table('grn_accounts')->insert([
-                    'voucher_id' => $voucherItems[0]->id,  
+                    'voucher_id' => $voucherId,  // Save voucher ID
                     'vendor_account_id' => $cashInHandAccount->id,
                     'vendor_net_amount' => $totalAmount,
                     'created_at' => $createdAt,
                     'updated_at' => $updatedAt,
                 ]);
 
+                // Insert Debit Entries for Each Voucher Item
                 foreach ($voucherItems as $voucherItem) {
                     DB::table('grn_accounts')->insert([
-                        'voucher_id' => $voucherItem->id, 
+                        'voucher_id' => $voucherId,  // Save voucher ID
                         'vendor_account_id' => $voucherItem->account,
                         'debit' => $voucherItem->amount,
                         'created_at' => $createdAt,
@@ -161,17 +165,19 @@ public function store(Request $request)
                 }
 
             } elseif ($request->voucher_type === 'Cash Receipt') {
+                // Insert Cash In Hand as Debit in GRN Accounts
                 DB::table('grn_accounts')->insert([
-                    'voucher_id' => $voucherItems[0]->id,  
+                    'voucher_id' => $voucherId,  // Save voucher ID
                     'vendor_account_id' => $cashInHandAccount->id,
                     'debit' => $totalAmount,
                     'created_at' => $createdAt,
                     'updated_at' => $updatedAt,
                 ]);
 
+                // Insert Credit Entries for Each Voucher Item
                 foreach ($voucherItems as $voucherItem) {
                     DB::table('grn_accounts')->insert([
-                        'voucher_id' => $voucherItem->id, 
+                        'voucher_id' => $voucherId,  // Save voucher ID
                         'vendor_account_id' => $voucherItem->account,
                         'vendor_net_amount' => $voucherItem->amount,
                         'created_at' => $createdAt,
@@ -200,6 +206,7 @@ public function store(Request $request)
     }
 }
 
+
 public function destroy($id)
 {
     try {
@@ -218,6 +225,33 @@ public function destroy($id)
         ], 500);
     }
 }
+public function voucheritems($id)
+{
+    $user = Auth::user();
+    
+    $currentDate = Carbon::today()->toDateString();
+
+    $voucher = Voucher::with(['voucherItems', 'user', 'grnAccounts.vendorAccount'])
+            ->whereDate('created_at', $currentDate)  
+            ->where('id', $id) 
+            ->first(); 
+
+    if (!$voucher) {
+        return redirect()->back()->with('error', 'Voucher not found.');
+    }
+
+    return view('adminpages.voucheritems', [
+        'userName' => $user->name,
+        'userEmail' => $user->email,
+        'voucher' => $voucher,
+    ]);
+}
+
+
+
+
+
+
 
 
 }

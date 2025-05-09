@@ -722,6 +722,12 @@ function loadsaleprintPage(element) {
     const saleprintId = element.getAttribute('data-sale-id');
     loadPage(`/admin/sale_print_invoice/${saleprintId}`, `/admin/sale_print_invoice/${saleprintId}`);
 }
+
+
+function loadvoucheritemsPage(element) {
+    const voucherId = element.getAttribute('data-voucher-id');
+    loadPage(`/admin/voucher_items/${voucherId}`, `/admin/voucher_items/${voucherId}`);
+}
   
    </script>
   
