@@ -271,4 +271,5 @@ Route::post('/get-cash-in-hand', [VoucherController::class, 'getCashInHand']);
 Route::get('/get-account-balance', [VoucherController::class, 'getAccountBalance']);
 //to add voucher
 Route::post('/save-voucher', [VoucherController::class, 'store'])->name('voucher.store');
-
+//to del voucher
+Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');

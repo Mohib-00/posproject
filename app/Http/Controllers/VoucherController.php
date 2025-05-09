@@ -200,5 +200,24 @@ public function store(Request $request)
     }
 }
 
+public function destroy($id)
+{
+    try {
+        $voucher = Voucher::findOrFail($id);
+        $voucher->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voucher deleted successfully.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete voucher.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 
 }

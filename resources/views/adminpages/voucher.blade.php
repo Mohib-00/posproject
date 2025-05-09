@@ -161,7 +161,7 @@
                                 @php $counter = 1; @endphp
                                
                                   @foreach($vouchers as $voucher)
-                                      <tr class="user-row sale-row" id="sale-{{ $voucher->id }}">
+                                      <tr class="user-row sale-row" id="voucher-row-{{ $voucher->id }}">
                                           <td>{{ $counter }}</td>
                                           <td>{{ $voucher->id }}</td>
                                           <td>{{ $voucher->receiving_location }}</td>
@@ -211,6 +211,60 @@
 
     @include('adminpages.js')
     @include('adminpages.ajax')
+
+    <script>
+      $(document).on('click', '.delvoucher', function (e) {
+    e.preventDefault();
+
+    let voucherId = $(this).data('voucher-id');
+    let url = `/voucher/${voucherId}`;
+    let rowSelector = `#voucher-row-${voucherId}`;
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $(rowSelector).remove();
+
+                        Swal.fire(
+                            'Deleted!',
+                            response.message,
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            response.message,
+                            'error'
+                        );
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire(
+                        'Error!',
+                        xhr.responseJSON.message || 'Something went wrong!',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+});
+</script>
 
 
   

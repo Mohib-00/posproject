@@ -341,6 +341,7 @@ $(document).ready(function() {
                         $('#totalAmount').val('0');
                         $('#cashinhand').val('0');
                         $('#totalAmount').val('0');
+                        loadvoucher();
                     });
                 } else {
                     Swal.fire({
