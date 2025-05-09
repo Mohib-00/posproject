@@ -18,6 +18,8 @@ class GrnAccount extends Model
         'complete',
         'grn',
         'payment',
+        'voucher_id',
+        'voucher'
     ];
 
     public function vendorAccount()
@@ -34,6 +36,12 @@ public function sale()
 {
     return $this->belongsTo(Sale::class, 'sale_id', 'id');
 }
+
+
+ public function voucherItem()
+    {
+        return $this->belongsTo(VoucherItem::class, 'voucher_id','id');
+    }
 
 
 }

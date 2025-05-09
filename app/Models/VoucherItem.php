@@ -21,4 +21,9 @@ class VoucherItem extends Model
     {
         return $this->belongsTo(Voucher::class,'voucher_id','id');
     }
+
+    public function grnAccounts()
+    {
+        return $this->hasMany(GrnAccount::class, 'voucher_id','id');
+    }
 }

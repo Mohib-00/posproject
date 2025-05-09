@@ -269,3 +269,6 @@ Route::get('/sales-list', [SaleController::class, 'salelistsearch'])->name('sale
 Route::post('/get-cash-in-hand', [VoucherController::class, 'getCashInHand']);
 //to get account balance
 Route::get('/get-account-balance', [VoucherController::class, 'getAccountBalance']);
+//to add voucher
+Route::post('/save-voucher', [VoucherController::class, 'store'])->name('voucher.store');
+

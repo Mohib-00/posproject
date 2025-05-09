@@ -97,7 +97,7 @@
                   <div class="col-md-12">
                       <div class="card">
 
-                        <form action="{{ route('sales.list') }}" method="GET" class="row g-2 p-3 d-flex align-items-end">
+                        <form method="GET" class="row g-2 p-3 d-flex align-items-end">
                           <div class="col-md-2">
                               <label for="from_date" class="form-label">From Date</label>
                               <input type="date" id="from_date" name="from_date" class="form-control" value="{{ request('from_date') }}">
@@ -147,9 +147,9 @@
                                   <tr>
                                     <th>#</th>
                                     <th>Id</th>
+                                    <th>Location</th>
                                     <th>Narration</th>
                                     <th>Payment Type</th> 
-                                    <th>Accounts</th>
                                     <th>Total Amount</th>
                                     <th>Veoucher Status</th>
                                     <th>Created By</th>
@@ -158,50 +158,37 @@
                                   </tr>
                               </thead>
                               <tbody>
+                                @php $counter = 1; @endphp
                                
-                                  {{--@foreach($vouchers as $voucher)
-                                      <tr class="user-row sale-row" id="sale-{{ $sale->id }}">
+                                  @foreach($vouchers as $voucher)
+                                      <tr class="user-row sale-row" id="sale-{{ $voucher->id }}">
                                           <td>{{ $counter }}</td>
-                                          <td>{{ $sale->id }}</td>
-                                          <td>{{ $sale->ref }}</td>
-                                          <td>{{ $sale->customer_name }}</td>
-                                          <td>{{ $sale->payment_type ?? 'N/A' }}</td>
-                                          <td>{{ $sale->subtotal }}</td>
-                                          <td>{{ $sale->fixed_discount }}</td>
-                                          <td>{{ $sale->discount }}</td>
-                                          <td>{{ $sale->sale_return }}</td>
-                                          <td>{{ $sale->sale_type == 'credit' ? $sale->subtotal : '' }}</td>
-                                          <td>{{ $sale->sale_type == 'cash' ? $sale->subtotal : '' }}</td>
-                                          <td>{{ $sale->user->name ?? 'Unknown' }}</td>
-                                          <td>{{ $sale->status ?? 'Pending' }}</td>
-                                          <td style="white-space: nowrap;">{{ $sale->created_at->format('d-m-Y ') }}</td>
+                                          <td>{{ $voucher->id }}</td>
+                                          <td>{{ $voucher->receiving_location }}</td>
+                                          <td>{{ $voucher->remarks }}</td>
+                                          <td>{{ $voucher->voucher_type }}</td>
+                                          <td>{{ $voucher->totalAmount }}</td>
+                                          <td>{{ $voucher->voucher_status }}</td>
+                                          <td>{{ $voucher->user->name }}</td>
+                                          <td style="white-space: nowrap;">{{ $voucher->created_at->format('d-m-Y ') }}</td>
                                           <td>
                                               <div class="form-button-action" style="display: flex; gap: 8px; align-items: center;">
-                                                  <a data-sale-id="{{ $sale->id }}" onclick="loadeditSalePage(this)" class="btn btn-link btn-primary btn-lg edit-sale-btn">
+                                                  <a data-voucher-id="{{ $voucher->id }}" onclick="loadeditvoucherPage(this)" class="btn btn-link btn-primary btn-lg edit-voucher-btn">
                                                       <i class="fa fa-edit"></i>
                                                   </a>
-                                                  <a data-sale-id="{{ $sale->id }}" onclick="loadsaleinvoicePage(this)" class="btn btn-link btn-primary btn-lg invoicepage">
+                                                  <a data-voucher-id="{{ $voucher->id }}" onclick="loadvoucheritemsPage(this)" class="btn btn-link btn-primary btn-lg invoicepage">
                                                       <i style="color: purple" class="fa fa-eye"></i>
                                                   </a>
-                                                  <a data-sale-id="{{ $sale->id }}" onclick="loadsaleprintPage(this)" class="btn btn-link btn-primary btn-lg saleprintpage">
-                                                      <i style="color:darkred" class="fas fa-print"></i>
-                                                  </a>
-                                                  <a data-sale-id="{{ $sale->id }}" class="btn btn-link btn-danger delsale mt-2">
+                                               
+                                                  <a data-voucher-id="{{ $voucher->id }}" class="btn btn-link btn-danger delvoucher mt-2">
                                                       <i class="fa fa-times"></i>
                                                   </a>
-                                                  @if ($sale->status == 'pending')
-                                                  <a data-sale-id="{{ $sale->id }}" data-customer-name="{{ $sale->customer_name }}" data-subtotal="{{ $sale->subtotal }}" class="btn btn-sm completesale d-inline-flex align-items-center px-2 py-1 text-white" style="background-color: #dc3545;" data-bs-toggle="modal" data-bs-target="#completeSaleModal">
-                                                      <i class="fas fa-check-circle me-1"></i> Complete
-                                                  </a>
-                                                  @endif
-                                                  <a data-sale-id="{{ $sale->id }}" class="btn btn-sm salereturn d-inline-flex align-items-center px-2 py-1 text-white" style="background-color: #007bff; white-space: nowrap;">
-                                                      <i class="fas fa-undo-alt me-1"></i> Sale Return
-                                                  </a>
+                                                  
                                               </div>
                                           </td>
                                       </tr>
                                      
-                                  @endforeach--}}
+                                  @endforeach
                               </tbody>
                              
                           </table>

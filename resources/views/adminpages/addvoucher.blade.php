@@ -199,6 +199,8 @@
     @include('adminpages.ajax')
 
 
+
+
     <script>
     $(document).ready(function() {
     $('#vendors').on('change', function() {
@@ -296,6 +298,74 @@ function removeRow(button) {
     row.remove();
     calculateTotal();
 }
+
+$(document).ready(function() {
+    $(document).on('keydown', function(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            $('#submitdata').click();
+        }
+    });
+
+    $('#submitdata').on('click', function(e) {
+        e.preventDefault();
+
+        let formData = $('#voucherform').serializeArray();
+        let totalAmount = $('#totalAmount').val();
+        let cashInHand = $('#cashinhand').val();
+        
+        $('.balance').each(function() {
+            formData.push({ name: 'balance[]', value: $(this).val() });
+        });
+
+        formData.push({ name: 'cash_in_hand', value: cashInHand });
+        formData.push({ name: 'totalAmount', value: totalAmount });
+
+        $.ajax({
+            url: '/save-voucher',
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Voucher created successfully',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        $('#voucherform')[0].reset();
+                        $('#totalAmount').val('0');
+                        $('#cashinhand').val('0');
+                        $('#totalAmount').val('0');
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error while creating voucher.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
+
+
+
 
   </script>
   

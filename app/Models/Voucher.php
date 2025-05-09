@@ -15,6 +15,7 @@ class Voucher extends Model
         'cash_in_hand',
         'totalAmount',
         'remarks',
+        'voucher_status',
         'user_id',
         'created_at',
         'updated_at',
@@ -28,5 +29,10 @@ class Voucher extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+     public function grnAccounts()
+    {
+        return $this->hasMany(GrnAccount::class, 'voucher_id','id');
     }
 }
