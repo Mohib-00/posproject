@@ -118,7 +118,7 @@
                         <div class="col-md-6 col-lg-4">
                           <div class="form-group">
                               <label for="invoice_date">Invoice Date</label>
-                              <input type="date" id="from_date" name="created_at" class="form-control" value="{{$purchase->created_at }}">
+                              <input type="date" id="from_date" name="created_at" class="form-control" value="{{ $purchase->created_at->format('Y-m-d') }}" >
                               <span id="nameError" class="text-danger"></span>
                           </div>
                       </div>

@@ -94,8 +94,8 @@ Route::group(['middleware' => ['admin.auth'], 'prefix' => 'admin'], function() {
     Route::get('sale_print_invoice/{id}', [SaleController::class, 'saleprintinvoice'])->name('saleprint.invoice');
     Route::get('add_voucher', [VoucherController::class, 'addvoucher'])->name('voucher');
     Route::get('voucher', [VoucherController::class, 'voucher'])->name('showvoucher');
-        Route::get('voucher_items/{id}', [VoucherController::class, 'voucheritems'])->name('voucher.items');
-
+    Route::get('voucher_items/{id}', [VoucherController::class, 'voucheritems'])->name('voucher.items');
+    Route::get('edit_voucher/{id}', [VoucherController::class, 'editvoucher'])->name('edit.vouchar');
 });
 //to open forgot password page
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
@@ -275,3 +275,7 @@ Route::get('/get-account-balance', [VoucherController::class, 'getAccountBalance
 Route::post('/save-voucher', [VoucherController::class, 'store'])->name('voucher.store');
 //to del voucher
 Route::delete('/voucher/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+//to serch voucher
+Route::get('/search-vouchers', [VoucherController::class, 'search'])->name('search.vouchers');
+//to edit voucher
+Route::post('/edit_voucher/{id}', [VoucherController::class, 'editvouchers'])->name('voucher.update');

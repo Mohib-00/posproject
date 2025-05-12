@@ -31,6 +31,23 @@ class VoucherController extends Controller
         return view('adminpages.voucher', ['userName' => $user->name,'userEmail' => $user->email],compact('vouchers'));
     }
 
+     public function search(Request $request)
+    {
+        $user = Auth::user();
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        $vouchers = Voucher::when($fromDate, function ($query, $fromDate) {
+                return $query->whereDate('created_at', '>=', $fromDate);
+            })
+            ->when($toDate, function ($query, $toDate) {
+                return $query->whereDate('created_at', '<=', $toDate);
+            })
+            ->get();
+
+        return view('adminpages.voucher',['userName' => $user->name,'userEmail' => $user->email], compact('vouchers'));
+    }
+
     public function getCashInHand(Request $request)
 {
     $voucherType = $request->input('voucher_type');
@@ -101,7 +118,6 @@ public function store(Request $request)
         $createdAt = $request->created_at ?? now();
         $updatedAt = $request->updated_at ?? $createdAt;
 
-        // Create Voucher
         $voucher = Voucher::create([
             'user_id' => Auth::id(),
             'receiving_location' => $request->receiving_location,
@@ -135,7 +151,6 @@ public function store(Request $request)
             ]);
         }
 
-        // Fetch Cash In Hand Account
         $cashInHandAccount = DB::table('add_accounts')
             ->where('sub_head_name', 'Cash In Hand')
             ->first();
@@ -144,19 +159,17 @@ public function store(Request $request)
             $totalAmount = collect($voucherItems)->sum('amount');
 
             if ($request->voucher_type === 'Cash Payment') {
-                // Insert Cash In Hand as Credit in GRN Accounts
                 DB::table('grn_accounts')->insert([
-                    'voucher_id' => $voucherId,  // Save voucher ID
+                    'voucher_id' => $voucherId,  
                     'vendor_account_id' => $cashInHandAccount->id,
                     'vendor_net_amount' => $totalAmount,
                     'created_at' => $createdAt,
                     'updated_at' => $updatedAt,
                 ]);
 
-                // Insert Debit Entries for Each Voucher Item
                 foreach ($voucherItems as $voucherItem) {
                     DB::table('grn_accounts')->insert([
-                        'voucher_id' => $voucherId,  // Save voucher ID
+                        'voucher_id' => $voucherId,  
                         'vendor_account_id' => $voucherItem->account,
                         'debit' => $voucherItem->amount,
                         'created_at' => $createdAt,
@@ -165,19 +178,17 @@ public function store(Request $request)
                 }
 
             } elseif ($request->voucher_type === 'Cash Receipt') {
-                // Insert Cash In Hand as Debit in GRN Accounts
                 DB::table('grn_accounts')->insert([
-                    'voucher_id' => $voucherId,  // Save voucher ID
+                    'voucher_id' => $voucherId,  
                     'vendor_account_id' => $cashInHandAccount->id,
                     'debit' => $totalAmount,
                     'created_at' => $createdAt,
                     'updated_at' => $updatedAt,
                 ]);
 
-                // Insert Credit Entries for Each Voucher Item
                 foreach ($voucherItems as $voucherItem) {
                     DB::table('grn_accounts')->insert([
-                        'voucher_id' => $voucherId,  // Save voucher ID
+                        'voucher_id' => $voucherId,  
                         'vendor_account_id' => $voucherItem->account,
                         'vendor_net_amount' => $voucherItem->amount,
                         'created_at' => $createdAt,
@@ -248,10 +259,138 @@ public function voucheritems($id)
 }
 
 
+public function editvoucher($id)
+{
+    $user = Auth::user();
+    
+    $accounts = AddAccount::all();
+
+    $vouchers = Voucher::with(['voucherItems', 'user'])->findOrFail($id);
+
+    if (!$vouchers) {
+        return redirect()->back()->with('error', 'Voucher not found.');
+    }
+
+    return view('adminpages.editvoucher', [
+        'userName' => $user->name,
+        'userEmail' => $user->email,
+        'vouchers' => $vouchers,
+        'accounts' => $accounts
+    ]);
+}
 
 
+public function editvouchers(Request $request, $id)
+{
+    $request->validate([
+        'receiving_location' => 'required|string',
+        'voucher_type' => 'required|string',
+        'created_at' => 'nullable|date',
+        'remarks' => 'nullable|string',
+        'account.*' => 'required',
+        'amount.*' => 'required|numeric|min:0',
+    ]);
 
+    DB::beginTransaction();
 
+    try {
+        $createdAt = $request->created_at ?? now();
+        $updatedAt = now();
+
+        $voucher = Voucher::findOrFail($id);
+
+        $voucher->update([
+            'receiving_location' => $request->receiving_location,
+            'voucher_type' => $request->voucher_type,
+            'cash_in_hand' => $request->input('cash_in_hand', 0),
+            'totalAmount' => $request->input('totalAmount', 0),
+            'remarks' => $request->remarks,
+            'updated_at' => $updatedAt,
+        ]);
+
+        VoucherItem::where('voucher_id', $id)->delete();
+
+        $accounts = $request->input('account');
+        $balances = $request->input('balance');
+        $narrations = $request->input('narration');
+        $amounts = $request->input('amount');
+
+        foreach ($accounts as $index => $accountId) {
+            VoucherItem::create([
+                'voucher_id' => $id,
+                'account' => $accountId,
+                'balance' => $balances[$index] ?? 0,
+                'narration' => $narrations[$index] ?? '',
+                'amount' => $amounts[$index],
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ]);
+        }
+
+        $cashInHandAccount = DB::table('add_accounts')
+            ->where('sub_head_name', 'Cash In Hand')
+            ->first();
+
+        if ($cashInHandAccount) {
+            $totalAmount = collect($amounts)->sum();
+
+            DB::table('grn_accounts')->where('voucher_id', $id)->delete();
+
+            if ($request->voucher_type === 'Cash Payment') {
+                DB::table('grn_accounts')->insert([
+                    'voucher_id' => $id,
+                    'vendor_account_id' => $cashInHandAccount->id,
+                    'vendor_net_amount' => $totalAmount,
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
+                ]);
+
+                foreach ($accounts as $index => $accountId) {
+                    DB::table('grn_accounts')->insert([
+                        'voucher_id' => $id,
+                        'vendor_account_id' => $accountId,
+                        'debit' => $amounts[$index],
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
+                    ]);
+                }
+
+            } elseif ($request->voucher_type === 'Cash Receipt') {
+                DB::table('grn_accounts')->insert([
+                    'voucher_id' => $id,
+                    'vendor_account_id' => $cashInHandAccount->id,
+                    'debit' => $totalAmount,
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
+                ]);
+
+                foreach ($accounts as $index => $accountId) {
+                    DB::table('grn_accounts')->insert([
+                        'voucher_id' => $id,
+                        'vendor_account_id' => $accountId,
+                        'vendor_net_amount' => $amounts[$index],
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
+                    ]);
+                }
+            }
+        }
+
+        DB::commit();
+
+        return response()->json(['success' => true, 'message' => 'Voucher updated successfully']);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        Log::error('Voucher update failed: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Voucher update failed.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
 
 
 }

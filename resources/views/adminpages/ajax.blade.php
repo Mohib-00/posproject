@@ -728,6 +728,11 @@ function loadvoucheritemsPage(element) {
     const voucherId = element.getAttribute('data-voucher-id');
     loadPage(`/admin/voucher_items/${voucherId}`, `/admin/voucher_items/${voucherId}`);
 }
+
+ function loadeditvoucherPage(element) {
+    const editvoucherId = element.getAttribute('data-voucher-id');
+    loadPage(`/admin/edit_voucher/${editvoucherId}`, `/admin/edit_voucher/${editvoucherId}`);
+}
   
    </script>
   

@@ -97,7 +97,7 @@
                   <div class="col-md-12">
                       <div class="card">
 
-                        <form method="GET" class="row g-2 p-3 d-flex align-items-end">
+                        <form action="{{ route('search.vouchers') }}" method="GET" class="row g-2 p-3 d-flex align-items-end">
                           <div class="col-md-2">
                               <label for="from_date" class="form-label">From Date</label>
                               <input type="date" id="from_date" name="from_date" class="form-control" value="{{ request('from_date') }}">
