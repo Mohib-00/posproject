@@ -144,13 +144,13 @@
                           <table class="table table-bordered" id="productTable">
                             <thead>
                               <tr>
-                                <th style="background-color: #FFA500; color: white;">Product</th>
-                                <th style="background-color: #FFA500; color: white;">Qty</th>
-                                <th style="background-color: #FFA500; color: white;">Purchase Rate</th>
-                                <th style="background-color: #FFA500; color: white;">Retail Rate</th>
-                                <th style="background-color: #FFA500; color: white;">UPR</th>
-                                <th style="background-color: #FFA500; color: white;">URR</th>
-                                <th style="background-color: #FFA500; color: white;">Del</th>
+                                <th style="background-color: #1a2035; color: white;">Product</th>
+                                <th style="background-color: #1a2035; color: white;">Qty</th>
+                                <th style="background-color: #1a2035; color: white;">Purchase Rate</th>
+                                <th style="background-color: #1a2035; color: white;">Retail Rate</th>
+                                <th style="background-color: #1a2035; color: white;">UPR</th>
+                                <th style="background-color: #1a2035; color: white;">URR</th>
+                                <th style="background-color: #1a2035; color: white;">Del</th>
                               </tr>
                             </thead>
                             <tbody id="tableBody">

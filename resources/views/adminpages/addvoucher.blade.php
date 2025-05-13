@@ -134,11 +134,11 @@
                           <table class="table table-bordered" id="productTable">
                             <thead>
                                 <tr>
-                                    <th style="background-color: #FFA500; color: white;">Account</th>
-                                    <th style="background-color: #FFA500; color: white;">Balance</th>
-                                    <th style="background-color: #FFA500; color: white;">Narration</th>
-                                    <th style="background-color: #FFA500; color: white;">Amount</th>
-                                    <th style="background-color: #FFA500; color: white;">
+                                    <th style="background-color: #1a2035; color: white;">Account</th>
+                                    <th style="background-color: #1a2035; color: white;">Balance</th>
+                                    <th style="background-color: #1a2035; color: white;">Narration</th>
+                                    <th style="background-color: #1a2035; color: white;">Amount</th>
+                                    <th style="background-color: #1a2035; color: white;">
                                         <button type="button" class="btn btn-sm btn-light" onclick="addRow()">+</button>
                                     </th>
                                 </tr>

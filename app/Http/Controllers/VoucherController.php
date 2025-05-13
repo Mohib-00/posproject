@@ -236,16 +236,21 @@ public function destroy($id)
         ], 500);
     }
 }
-public function voucheritems($id)
+public function voucheritems(Request $request, $id)
 {
     $user = Auth::user();
-    
-    $currentDate = Carbon::today()->toDateString();
 
-    $voucher = Voucher::with(['voucherItems', 'user', 'grnAccounts.vendorAccount'])
-            ->whereDate('created_at', $currentDate)  
-            ->where('id', $id) 
-            ->first(); 
+    $fromDate = $request->input('from_date');
+    $toDate = $request->input('to_date');
+
+    $query = Voucher::with(['voucherItems', 'user', 'grnAccounts.vendorAccount'])
+        ->where('id', $id);
+
+    if ($fromDate && $toDate) {
+        $query->whereBetween('created_at', [$fromDate, $toDate]);
+    }
+
+    $voucher = $query->first();
 
     if (!$voucher) {
         return redirect()->back()->with('error', 'Voucher not found.');
@@ -257,6 +262,7 @@ public function voucheritems($id)
         'voucher' => $voucher,
     ]);
 }
+
 
 
 public function editvoucher($id)

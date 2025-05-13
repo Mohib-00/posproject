@@ -107,7 +107,7 @@ public function update(Request $request, $id)
     ], 200);
 }
 
-public function deletesub(Request $request)
+public function deletedeletesub(Request $request)
 {
     $sub = SubCategory::find($request->sub_id);
 
