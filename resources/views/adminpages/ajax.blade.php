@@ -716,6 +716,11 @@ function loadformatPage() {
        loadPage('/admin/salary', '/admin/salary');
    }
 
+    function loaddesignationPage() {
+       loadPage('/admin/designation', '/admin/designation');
+   }
+
+
 
    function loadsaleinvoicePage(element) {
     const saleId = element.getAttribute('data-sale-id');

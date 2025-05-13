@@ -42,69 +42,76 @@ class CustomerController extends Controller
         return view('adminpages.addcustomers', ['userName' => $user->name,'userEmail' => $user->email],compact('areas','users'));
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'customer_name' => 'nullable|string|max:255|unique:customers,customer_name',
-                'area_id' => 'nullable|',
-                'client_type' => 'nullable|string|max:255',
-                'assigned_user_id' => 'nullable|',
-                'phone_1' => 'nullable|string|max:255',
-                'phone_2' => 'nullable|string|max:255',
-                'client_gender' => 'nullable|string|max:255',
-                'client_cnic' => 'nullable|string|max:255',
-                'client_father_name' => 'nullable|string|max:255',
-                'client_residence' => 'nullable|string|max:255',
-                'client_occupation' => 'nullable|string|max:255',
-                'client_salary' => 'nullable|numeric',
-                'client_fixed_discount' => 'nullable|numeric',
-                'distributor_fix_margin' => 'nullable|numeric',
-                'client_permanent_address' => 'nullable|string|max:255',
-                'client_residential_address' => 'nullable|string|max:255',
-                'client_office_address' => 'nullable|string|max:255',
-            ]);
-        
-            $customer = new Customer();
-            $customer->customer_name = $validatedData['customer_name'] ?? null;
-            $customer->area_id = $validatedData['area_id'] ?? null;
-            $customer->client_type = $validatedData['client_type'] ?? null;
-            $customer->assigned_user_id = $validatedData['assigned_user_id'] ?? null;
-            $customer->phone_1 = $validatedData['phone_1'] ?? null;
-            $customer->phone_2 = $validatedData['phone_2'] ?? null;
-            $customer->client_gender = $validatedData['client_gender'] ?? null;
-            $customer->client_cnic = $validatedData['client_cnic'] ?? null;
-            $customer->client_father_name = $validatedData['client_father_name'] ?? null;
-            $customer->client_residence = $validatedData['client_residence'] ?? null;
-            $customer->client_occupation = $validatedData['client_occupation'] ?? null;
-            $customer->client_salary = $validatedData['client_salary'] ?? null;
-            $customer->client_fixed_discount = $validatedData['client_fixed_discount'] ?? null;
-            $customer->distributor_fix_margin = $validatedData['distributor_fix_margin'] ?? null;
-            $customer->client_permanent_address = $validatedData['client_permanent_address'] ?? null;
-            $customer->client_residential_address = $validatedData['client_residential_address'] ?? null;
-            $customer->client_office_address = $validatedData['client_office_address'] ?? null;
-        
-            $customer->save();
-            
-            \App\Models\AddAccount::create([
-                'head_name' => 'Accounts Receiveable',
-                'sub_head_name' => $customer->customer_name,
-                'child' => 'Accounts Receiveable',
-            ]);
-        
-            return response()->json([
-                'success' => true,
-                'customer' => $customer,
-            ], 201);
-        
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
+   public function store(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'customer_name' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $exists = Customer::whereRaw('LOWER(customer_name) = ?', [strtolower($value)])->exists();
+                    if ($exists) {
+                        $fail('The customer name has already been taken.');
+                    }
+                }
+            ],
+            'area_id' => 'nullable',
+            'client_type' => 'nullable|string|max:255',
+            'assigned_user_id' => 'nullable',
+            'phone_1' => 'nullable|string|max:255',
+            'phone_2' => 'nullable|string|max:255',
+            'client_gender' => 'nullable|string|max:255',
+            'client_cnic' => 'nullable|string|max:255',
+            'client_father_name' => 'nullable|string|max:255',
+            'client_residence' => 'nullable|string|max:255',
+            'client_occupation' => 'nullable|string|max:255',
+            'client_salary' => 'nullable|numeric',
+            'client_fixed_discount' => 'nullable|numeric',
+            'distributor_fix_margin' => 'nullable|numeric',
+            'client_permanent_address' => 'nullable|string|max:255',
+            'client_residential_address' => 'nullable|string|max:255',
+            'client_office_address' => 'nullable|string|max:255',
+        ]);
+
+        $customer = new Customer();
+        $customer->customer_name = $validatedData['customer_name'] ?? null;
+        $customer->area_id = $validatedData['area_id'] ?? null;
+        $customer->client_type = $validatedData['client_type'] ?? null;
+        $customer->assigned_user_id = $validatedData['assigned_user_id'] ?? null;
+        $customer->phone_1 = $validatedData['phone_1'] ?? null;
+        $customer->phone_2 = $validatedData['phone_2'] ?? null;
+        $customer->client_gender = $validatedData['client_gender'] ?? null;
+        $customer->client_cnic = $validatedData['client_cnic'] ?? null;
+        $customer->client_father_name = $validatedData['client_father_name'] ?? null;
+        $customer->client_residence = $validatedData['client_residence'] ?? null;
+        $customer->client_occupation = $validatedData['client_occupation'] ?? null;
+        $customer->client_salary = $validatedData['client_salary'] ?? null;
+        $customer->client_fixed_discount = $validatedData['client_fixed_discount'] ?? null;
+        $customer->distributor_fix_margin = $validatedData['distributor_fix_margin'] ?? null;
+        $customer->client_permanent_address = $validatedData['client_permanent_address'] ?? null;
+        $customer->client_residential_address = $validatedData['client_residential_address'] ?? null;
+        $customer->client_office_address = $validatedData['client_office_address'] ?? null;
+
+        $customer->save();
+
+        \App\Models\AddAccount::create([
+            'head_name' => 'Accounts Receiveable',
+            'sub_head_name' => $customer->customer_name,
+            'child' => 'Accounts Receiveable',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'customer' => $customer,
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
-    
-    
-    
-    
+}
+
 
 public function show($id)
 {
@@ -130,7 +137,17 @@ public function update(Request $request, $id)
         $customer = Customer::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'customer_name' => 'nullable|string|max:255',
+              'customer_name' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $exists = Customer::whereRaw('LOWER(customer_name) = ?', [strtolower($value)])->exists();
+                    if ($exists) {
+                        $fail('The customer name has already been taken.');
+                    }
+                }
+            ],
             'area_id' => 'nullable',
             'client_type' => 'nullable|string|max:255',
             'assigned_user_id' => 'nullable
@@ -223,15 +240,19 @@ public function update(Request $request, $id)
 
 public function deletecustomer(Request $request)
 {
-    $customer = customer::find($request->customer_id);
+    $customer = Customer::find($request->customer_id);
 
     if ($customer) {
+        \App\Models\AddAccount::where('sub_head_name', $customer->customer_name)->delete();
+
         $customer->delete();
+
         return response()->json(['success' => true, 'message' => 'Deleted successfully']);
     }
 
-    return response()->json(['success' => false, 'message' => 'Not found']);
+    return response()->json(['success' => false, 'message' => 'Customer not found']);
 }
+
 
 
 public function blockCustomer($id)

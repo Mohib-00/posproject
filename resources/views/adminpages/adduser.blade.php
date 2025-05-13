@@ -145,6 +145,13 @@
         Register();
     });
 
+     $(document).on('keydown', function (e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                Register();
+            }
+        });
+
     function Register() {
         $('.text-danger').text('');
 

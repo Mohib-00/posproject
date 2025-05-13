@@ -384,11 +384,19 @@ function removeLoader() {
        });
    });
    
-   $('#vendorform').on('submit', function (e) {
+  $(document).on('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        $('#vendorform').submit();  
+    }
+});
+
+$('#vendorform').on('submit', function (e) {
     e.preventDefault();   
 
     let formData = new FormData(this);
     createLoader();
+    
     $.ajax({
         url: "{{ route('vendor.store') }}",
         type: "POST",
@@ -406,56 +414,42 @@ function removeLoader() {
                 }).then(() => {
                     $('#vendorform')[0].reset();
                     $('.custom-modal.vendor').fadeOut();
-
-                    const vendor = response.vendor;
-                    const created_at = vendor.created_at; 
-                    const user_name = response.user_name;
-                    const newRow = `
-                        <tr data-vendor-id="${vendor.id}">
-                            <td>${$('.table tbody tr').length + 1}</td>
-                            <td>${vendor.id}</td>
-                            <td>${vendor.name}</td>
-                            <td>${vendor.mobile}</td>
-                            <td>${vendor.address}</td>
-                             <td>${user_name}</td>
-                            <td>${created_at}</td>
-                            <td>
-                                <div class="form-button-action">
-                                    <a id="vendoredit" data-vendor-id="${vendor.id}" class="btn btn-link btn-primary btn-lg edit-vendor-btn">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <a data-vendor-id="${vendor.id}" class="btn btn-link btn-danger mt-2 delvendor">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-
-                    $('table tbody').prepend(newRow);
-                    $('table tbody tr').each(function (index) {
-                        $(this).find('td:first').text(index + 1);
-                    });
                 });
             }
         },
         error: function (xhr) {
             removeLoader();
-            let errors = xhr.responseJSON.errors;
-            if (errors) {
-                let errorMessages = Object.values(errors)
-                    .map(err => err.join('\n'))
-                    .join('\n');
+            let response = xhr.responseJSON;
+
+            if (response && response.errors) {
+                let errorMessages = '';
+
+                $.each(response.errors, function (key, errors) {
+                    if (key === 'name') {
+                        errorMessages += `<strong>Name Error:</strong> ${errors.join('<br>')}<br>`;
+                    } else {
+                        errorMessages += errors.join('<br>') + '<br>';
+                    }
+                });
+
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: errorMessages,
+                    html: errorMessages,  
+                    confirmButtonText: 'Ok'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again.',
                     confirmButtonText: 'Ok'
                 });
             }
         }
     });
 });
+
 
    
    // get vendor data
@@ -494,66 +488,71 @@ function removeLoader() {
    
    // Edit vendor 
    $('#vendoreditform').on('submit', function (e) {
-       e.preventDefault();
-   
-       var formData = new FormData(this); 
-       var vendorId = $('#vendorforminput_edit').val(); 
-       createLoader();
-     
-       $.ajax({
-           url: "{{ route('vendor.update', '') }}/" + vendorId,  
-           type: "POST",  
-           data: formData,
-           contentType: false, 
-           processData: false, 
-           success: function (response) {
-            
+    e.preventDefault();
+    var formData = new FormData(this); 
+    var vendorId = $('#vendorforminput_edit').val(); 
+    createLoader();
+
+    $.ajax({
+        url: "{{ route('vendor.update', '') }}/" + vendorId,  
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
             removeLoader();
-               if (response.success) {
-                removeLoader();
-                   Swal.fire({
-                       icon: 'success',
-                       title: 'Updated!',
-                       text: response.message || 'Updated successfully.',
-                       confirmButtonText: 'Ok'
-                   }).then(() => {
-                       $('#vendoreditform')[0].reset();
-                       $('.custom-modal.vendoredit').fadeOut();
-   
-                       const vendor = $(`a[data-vendor-id="${vendorId}"]`).closest('tr');
-                       vendor.find('td:nth-child(2)').text(response.vendor.id);
-                       vendor.find('td:nth-child(3)').text(response.vendor.name);
-                       vendor.find('td:nth-child(4)').text(response.vendor.mobile);
-                       vendor.find('td:nth-child(5)').text(response.vendor.address);
-                       vendor.find('td:nth-child(6)').text(response.user_name); 
-                       vendor.find('td:nth-child(7)').text(response.vendor.created_at);
-                   });
-               } else {
-                   Swal.fire({
-                       icon: 'error',
-                       title: 'Error!',
-                       text: response.message || 'An error occurred.',
-                       confirmButtonText: 'Ok'
-                   });
-               }
-           },
-           error: function (xhr) {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: response.message || 'Updated successfully.',
+                    confirmButtonText: 'Ok'
+                }).then(() => {
+                    $('#vendoreditform')[0].reset();
+                    $('.custom-modal.vendoredit').fadeOut();
+
+                    const vendor = $(`a[data-vendor-id="${vendorId}"]`).closest('tr');
+                    vendor.find('td:nth-child(3)').text(response.vendor.name);
+                    vendor.find('td:nth-child(4)').text(response.vendor.mobile);
+                    vendor.find('td:nth-child(5)').text(response.vendor.address);
+                    vendor.find('td:nth-child(6)').text(response.user_name); 
+                    vendor.find('td:nth-child(7)').text(response.vendor.created_at);
+                });
+            }
+        },
+        error: function (xhr) {
             removeLoader();
-               let errors = xhr.responseJSON.errors;
-               if (errors) {
-                   let errorMessages = Object.values(errors)
-                       .map(err => err.join('\n'))
-                       .join('\n');
-                   Swal.fire({
-                       icon: 'error',
-                       title: 'Error!',
-                       text: errorMessages,
-                       confirmButtonText: 'Ok'
-                   });
-               }
-           }
-       });
-   });
+            let response = xhr.responseJSON;
+
+            if (response && response.errors) {
+                let errorMessages = '';
+                
+                $.each(response.errors, function (key, errors) {
+                    if (key === 'name') {
+                        errorMessages += `<strong>Name Error:</strong> ${errors.join('<br>')}<br>`;
+                    } else {
+                        errorMessages += errors.join('<br>') + '<br>';
+                    }
+                });
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    html: errorMessages,
+                    confirmButtonText: 'Ok'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'An unexpected error occurred.',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        }
+    });
+});
+
    
    });
    

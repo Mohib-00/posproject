@@ -16,48 +16,55 @@ class VendorController extends Controller
         return view('adminpages.vendors', ['userName' => $user->name,'userEmail' => $user->email],compact('vendors'));
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'name' => 'required|unique:vendors,name',
-                'mobile' => 'required',
-                'address' => 'required',
-            ]);
-    
-            $vendor = new Vendors();
-            $vendor->name = $request->name;
-            $vendor->mobile = $request->mobile;
-            $vendor->address = $request->address;
-            $vendor->user_id = Auth::id();
-            $vendor->save();
-    
-            \App\Models\AddAccount::create([
-                'head_name' => 'Accounts Payable',
-                'sub_head_name' => $vendor->name,
-                'child' => 'Accounts Payable',
-            ]);
-    
-            $user = \App\Models\User::find($vendor->user_id); 
-    
-            return response()->json([
-                'success' => true, 
-                'vendor' => $vendor, 
-                'user_name' => $user ? $user->name : 'Unknown'
-            ]);
-    
-        } catch (\Exception $e) {
+   public function store(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'mobile' => 'required',
+            'address' => 'required',
+        ]);
+
+        $existingVendor = Vendors::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->first();
+
+        if ($existingVendor) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'errors' => [
+                    'name' => ['The name has already been taken.']
+                ]
+            ], 422);
         }
-    }
-    
-    
-    
-    
 
+        $vendor = new Vendors();
+        $vendor->name = $request->name;
+        $vendor->mobile = $request->mobile;
+        $vendor->address = $request->address;
+        $vendor->user_id = Auth::id();
+        $vendor->save();
+
+        \App\Models\AddAccount::create([
+            'head_name' => 'Accounts Payable',
+            'sub_head_name' => $vendor->name,
+            'child' => 'Accounts Payable',
+        ]);
+
+        $user = \App\Models\User::find($vendor->user_id);
+
+        return response()->json([
+            'success' => true,
+            'vendor' => $vendor,
+            'user_name' => $user ? $user->name : 'Unknown'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+    
 public function show($id)
 {
     $vendor = Vendors::find($id);
@@ -78,50 +85,82 @@ public function show($id)
 
 public function update(Request $request, $id)
 {
-    $vendor = Vendors::findOrFail($id);   
+    try {
+        $vendor = Vendors::findOrFail($id);   
 
-    $validator = Validator::make($request->all(), [
-      'name' => 'nullable|string|max:255',
-      'mobile' => 'nullable|string|max:255',
-      'address' => 'nullable',
-  ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'nullable|string|max:255',
+            'mobile' => 'nullable|string|max:255',
+            'address' => 'nullable',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-     
-    if ($request->has('name')) {
-        $vendor->name = $request->name;
-    }
-    if ($request->has('mobile')) {
-        $vendor->mobile = $request->mobile;
-    }
-    if ($request->has('address')) {
-        $vendor->address = $request->address;
-    }
-    $user_name = $vendor->user ? $vendor->user->name : 'N/A';
-   
-     $vendor->save();
+        if ($request->has('name')) {
+            $existingVendor = Vendors::whereRaw('LOWER(name) = ?', [strtolower($request->name)])
+                ->where('id', '!=', $id)
+                ->first();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Updated successfully!',
-        'vendor' => $vendor,
-        'user_name' => $user_name,
-    ], 200);
+            if ($existingVendor) {
+                return response()->json([
+                    'errors' => [
+                        'name' => ['The name has already been taken.']
+                    ]
+                ], 422);
+            }
+
+            $vendor->name = $request->name;
+
+            \App\Models\AddAccount::where('sub_head_name', $vendor->getOriginal('name'))
+                ->update(['sub_head_name' => $request->name]);
+        }
+
+        if ($request->has('mobile')) {
+            $vendor->mobile = $request->mobile;
+        }
+
+        if ($request->has('address')) {
+            $vendor->address = $request->address;
+        }
+
+        $vendor->save();
+
+        $user_name = $vendor->user ? $vendor->user->name : 'N/A';
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Updated successfully!',
+            'vendor' => $vendor,
+            'user_name' => $user_name,
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json(['errors' => ['server' => $e->getMessage()]], 500);
+    }
 }
+
 
 public function deletevendor(Request $request)
 {
-    $vendor = Vendors::find($request->vendor_id);
+    try {
+        $vendor = Vendors::find($request->vendor_id);
 
-    if ($vendor) {
-        $vendor->delete();
-        return response()->json(['success' => true, 'message' => 'Deleted successfully']);
+        if ($vendor) {
+            \App\Models\AddAccount::where('sub_head_name', $vendor->name)->delete();
+            
+            $vendor->delete();
+
+            return response()->json(['success' => true, 'message' => 'Deleted successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Vendor not found']);
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
-
-    return response()->json(['success' => false, 'message' => 'Not found']);
 }
+
 
 }

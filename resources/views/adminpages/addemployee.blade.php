@@ -222,6 +222,13 @@ $(document).ready(function () {
            loader.remove();
        }
    }
+
+   $(document).on('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        $('#submitdata').click();  
+    }
+});
    
 $('#submitdata').on('click', function (e) {
     e.preventDefault();

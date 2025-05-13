@@ -11,49 +11,55 @@ use Illuminate\Support\Facades\Validator;
 
 class UserAuthcontroller extends Controller
 {
-    public function register(Request $request) {
-        try {
-            
-            $validateuser = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8',
-                'confirmPassword' => 'required|same:password',  
-            ]);
-    
-            
-            if ($validateuser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validateuser->errors()  
-                ], 401);  
-            }
-    
-            
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),  
-            ]);
-    
-            
-            return response()->json([
-                'status' => true,
-                'message' => 'User created successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken  
-            ], 200);
-    
-        } catch (\Throwable $th) {
-           
+   public function register(Request $request) {
+    try {
+        $validateuser = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'confirmPassword' => 'required|same:password',
+        ]);
+
+        if ($validateuser->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
-            ], 500);
+                'message' => 'Validation error',
+                'errors' => $validateuser->errors()
+            ], 401);
         }
+
+        $existingUser = User::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => [
+                    'name' => ['The name has already been taken.']
+                ]
+            ], 401);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User created successfully',
+            'token' => $user->createToken("API TOKEN")->plainTextToken
+        ], 200);
+
+    } catch (\Throwable $th) {
+        return response()->json([
+            'status' => false,
+            'message' => $th->getMessage(),
+        ], 500);
     }
-    
- 
+}
+
  
      public function login(Request $request)
 {

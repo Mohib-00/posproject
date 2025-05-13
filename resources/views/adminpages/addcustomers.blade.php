@@ -279,6 +279,13 @@ $(document).ready(function () {
        }
    }
    
+$(document).on('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        $('#submitdata').click();  
+    }
+});
+
 $('#submitdata').on('click', function (e) {
     e.preventDefault();
 
@@ -295,9 +302,8 @@ $('#submitdata').on('click', function (e) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function (response) {
-          removeLoader();
+            removeLoader();
             if (response.success) {
-              removeLoader();
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
@@ -309,20 +315,24 @@ $('#submitdata').on('click', function (e) {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
+                    title: 'Error',
                     text: response.message || 'Something went wrong!',
                     confirmButtonText: 'OK'
                 });
             }
         },
         error: function (xhr) {
-          removeLoader();
+            removeLoader();
             if (xhr.status === 422) {
                 let errors = xhr.responseJSON.errors;
                 let errorMessage = '';
 
                 $.each(errors, function (key, value) {
-                    errorMessage += value[0] + '<br>';
+                    if (key === 'customer_name') {
+                        errorMessage += `<strong>Name Error:</strong> ${value.join('<br>')}<br>`;
+                    } else {
+                        errorMessage += `${value.join('<br>')}<br>`;
+                    }
                 });
 
                 Swal.fire({
@@ -343,6 +353,7 @@ $('#submitdata').on('click', function (e) {
         }
     });
 });
+
 });
 
 </script>
