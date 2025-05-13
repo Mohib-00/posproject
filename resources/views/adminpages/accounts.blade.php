@@ -126,7 +126,7 @@
                                         <th>Image</th>
                                         <th>Account Name</th> 
                                         <th>Created At</th>
-                                        <th>Action</th>
+                                        {{--<th>Action</th>--}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -141,15 +141,13 @@
 
                                               <td>{{$account->created_at}}</td>                                          
                                               
-                                              <td>
+                                              {{--<td>
                                                   <div class="form-button-action" style="display: flex; gap: 8px; align-items: center;">
                                                     <a data-account-id="{{ $account->id }}" class="btn btn-link btn-primary btn-lg edit-accountttttttt-btn">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
-
-                                                
                                                   </div>
-                                              </td>
+                                              </td>--}}
                                               
                                              
                                                

@@ -156,7 +156,7 @@
                                               
                                             
                                               
-                                              <td>
+                                              {{--<td>
                                                   <div class="form-button-action" style="display: flex; gap: 8px; align-items: center;">
                                                     <a data-account-id="{{ $account->id }}" class="btn btn-link btn-primary btn-lg edit-account-btn">
                                                         <i class="fa fa-edit"></i>
@@ -165,7 +165,7 @@
                                                         <i class="fa fa-times"></i>                    
                                                       </a> 
                                                   </div>
-                                              </td>
+                                              </td>--}}
                                               
                                              
                                                

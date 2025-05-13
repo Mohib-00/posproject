@@ -68,7 +68,7 @@
 
           <li class="nav-item">
             <a href="/admin/sale_list" onclick="loadsalelistPage(); return false;">
-              <i style="color:blue" class="fas fa-dolly-flatbed"></i>
+              <i style="color:purple" class="fas fa-dolly-flatbed"></i>
               <p>Sale List</p>
             </a>
           </li>
