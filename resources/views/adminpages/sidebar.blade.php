@@ -265,6 +265,12 @@
                     <span class="sub-item">Add Voucher</span>
                   </a>
                 </li>
+
+                <li>
+                  <a href="/admin/salary" onclick="loadsalary(); return false;">
+                    <span class="sub-item">Pay Salary</span>
+                  </a>
+                </li>
                 
               </ul>
             </div>

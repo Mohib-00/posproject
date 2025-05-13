@@ -17,6 +17,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\saleController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubCategoryController;
@@ -96,6 +97,7 @@ Route::group(['middleware' => ['admin.auth'], 'prefix' => 'admin'], function() {
     Route::get('voucher', [VoucherController::class, 'voucher'])->name('showvoucher');
     Route::get('voucher_items/{id}', [VoucherController::class, 'voucheritems'])->name('voucher.items');
     Route::get('edit_voucher/{id}', [VoucherController::class, 'editvoucher'])->name('edit.vouchar');
+     Route::get("salary", [SalaryController::class, "salarys"]);
 });
 //to open forgot password page
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
