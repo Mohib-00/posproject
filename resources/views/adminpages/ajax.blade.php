@@ -720,6 +720,10 @@ function loadformatPage() {
        loadPage('/admin/designation', '/admin/designation');
    }
 
+     function loadsalereport() {
+       loadPage('/admin/sale_report', '/admin/sale_report');
+   }
+
 
 
    function loadsaleinvoicePage(element) {

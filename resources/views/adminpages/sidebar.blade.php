@@ -271,6 +271,24 @@
                     <span class="sub-item">Pay Salary</span>
                   </a>
                 </li>
+
+                  <li>
+                      <a data-bs-toggle="collapse" href="#subnav1">
+                         <i style="color:aqua" class="fas fa-balance-scale"></i>
+                        <p>Reports</p>
+                        <span class="caret"></span>
+                      </a>
+                      <div class="collapse" id="subnav1">
+                        <ul class="nav nav-collapse subnav">
+                          <li>
+                            <a href="/admin/sale_report" onclick="loadsalereport(); return false;">
+                              <span class="sub-item">Sale Report</span>
+                            </a>
+                          </li>
+                        
+                        </ul>
+                      </div>
+                    </li>
                 
               </ul>
             </div>

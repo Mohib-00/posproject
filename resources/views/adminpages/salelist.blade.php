@@ -194,7 +194,7 @@
                                           <td>{{ $sale->ref }}</td>
                                           <td>{{ $sale->customer_name }}</td>
                                           <td>{{ $sale->payment_type ?? 'N/A' }}</td>
-                                          <td>{{ $sale->subtotal }}</td>
+                                          <td>{{ $sale->total }}</td>
                                           <td>{{ $sale->fixed_discount }}</td>
                                           <td>{{ $sale->discount }}</td>
                                           <td>{{ $sale->sale_return }}</td>
@@ -230,7 +230,7 @@
                                       </tr>
                                       @php
                                           $counter++;
-                                          $totalNetAmount += $sale->subtotal;
+                                          $totalNetAmount += $sale->total;
                                           $totalFixedDiscount += $sale->fixed_discount;
                                           $totalDiscount += $sale->discount;
                                           $totalSaleReturn += $sale->sale_return;
@@ -239,18 +239,18 @@
                                       @endphp
                                   @endforeach
                               </tbody>
-                              <tfoot>
-                                  <tr>
-                                      <th colspan="5">Total</th>
-                                      <th>Rs:{{ $totalNetAmount }}</th>
-                                      <th>Rs:{{ $totalFixedDiscount }}</th>
-                                      <th>Rs:{{ $totalDiscount }}</th>
-                                      <th>Rs:{{ $totalSaleReturn }}</th>
-                                      <th>Rs:{{ $totalCredit }}</th>
-                                      <th>Rs:{{ $totalCash }}</th>
-                                      <th colspan="4"></th>
-                                  </tr>
-                              </tfoot>
+                             <tfoot>
+    <tr>
+        <th colspan="5">Total</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalNetAmount, 2) }}</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalFixedDiscount, 2) }}</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalDiscount, 2) }}</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalSaleReturn, 2) }}</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalCredit, 2) }}</th>
+        <th style="white-space: nowrap">Rs: {{ number_format($totalCash - $totalSaleReturn, 2) }}</th>
+    </tr>
+</tfoot>
+
                           </table>
                           
                           </div>
@@ -328,7 +328,7 @@
           .then(res => res.json())
           .then(data => {
             alert(data.message);
-            location.reload(); // Reload to show status updated
+            location.reload(); 
           })
           .catch(err => {
             console.error('Error:', err);
