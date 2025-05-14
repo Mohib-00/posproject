@@ -100,6 +100,7 @@ Route::group(['middleware' => ['admin.auth'], 'prefix' => 'admin'], function() {
     Route::get('edit_voucher/{id}', [VoucherController::class, 'editvoucher'])->name('edit.vouchar');
     Route::get("salary", [SalaryController::class, "salarys"]);
     Route::get("sale_report", [SaleReportController::class, "salereport"]);
+    Route::get("sale_items_detail/{id}", [SaleReportController::class, "saleitemsdetail"]);
 });
 //to open forgot password page
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');

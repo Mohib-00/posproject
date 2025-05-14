@@ -55,4 +55,11 @@ class SaleReportController extends Controller
     ]);
 }
 
+public function saleitemsdetail($id)
+{
+    $user = Auth::user();
+    $sale = Sale::with('saleItems')->findOrFail($id);
+    return view('adminpages.saleitemsdetails',['userName' => $user->name,'userEmail' => $user->email], compact('sale'));
+}
+
 }

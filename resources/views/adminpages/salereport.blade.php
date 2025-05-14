@@ -160,6 +160,7 @@
                                                     <th>Discount</th>
                                                     <th>Fixed Discount</th>
                                                     <th>Subtotal</th>
+                                                    <th>View</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -178,6 +179,11 @@
                                                         <td>{{ $sale->discount }}</td>
                                                         <td>{{ $sale->fixed_discount }}</td>
                                                         <td>{{ $sale->subtotal }}</td>
+                                                        <td>
+                                                        <a data-saledetailsPage-id="{{ $sale->id }}" onclick="loadsaledetailsPage(this)" class="btn btn-link btn-primary btn-lg saledetailspage">
+                                                           <i style="color: purple" class="fa fa-eye"></i>
+                                                        </a>
+                                                        </td>
                                                     </tr>
                                                     @php
                                                         $totalNetAmount += $sale->total;
@@ -195,6 +201,7 @@
                                                     <th>{{ number_format($totalDiscount, 2) }}</th>
                                                     <th>{{ number_format($totalFixedDiscount, 2) }}</th>
                                                     <th>{{ number_format($totalCash, 2) }}</th>
+                                                    <th></th>
                                                 </tr>
                                             </tfoot>
                                         </table>

@@ -746,6 +746,11 @@ function loadvoucheritemsPage(element) {
     const editvoucherId = element.getAttribute('data-voucher-id');
     loadPage(`/admin/edit_voucher/${editvoucherId}`, `/admin/edit_voucher/${editvoucherId}`);
 }
+
+function loadsaledetailsPage(element) {
+    const saledetailsPageId = element.getAttribute('data-saledetailsPage-id');
+    loadPage(`/admin/sale_items_detail/${saledetailsPageId}`, `/admin/sale_items_detail/${saledetailsPageId}`);
+}
   
    </script>
   
