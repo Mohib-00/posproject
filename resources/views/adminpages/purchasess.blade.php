@@ -141,7 +141,7 @@
                                 <th style="background-color: #1a2035; color: white;">UPR</th>
                                 <th style="background-color: #1a2035; color: white;">URR</th>
                                 <th style="background-color: #1a2035; color: white; text-align: center;">
-                                  <button type="button" class="btn btn-sm btn-light" onclick="addRow()">+</button>
+                                  <button type="button" class="btn btn-sm btn-light rowmaker" onclick="addRow()">+</button>
                                 </th>
                               </tr>
                             </thead>
@@ -176,7 +176,7 @@
                                   <input type="number" name="single_retail_rate[]" class="form-control" readonly>
                               </td>
                               <td>
-                                  <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                  <button type="button" class="btn btn-danger btn-sm rowremover" onclick="removeRow(this)">X</button>
                               </td>
                               </tr>
                           </tbody>
@@ -230,6 +230,14 @@
 
     @include('adminpages.js')
     @include('adminpages.ajax')
+    <script>
+      document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        document.querySelector('.rowmaker').click();
+    }
+});
+
+    </script>
 
 
     <script>

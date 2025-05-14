@@ -139,7 +139,7 @@
                                     <th style="background-color: #1a2035; color: white;">Narration</th>
                                     <th style="background-color: #1a2035; color: white;">Amount</th>
                                     <th style="background-color: #1a2035; color: white;">
-                                        <button type="button" class="btn btn-sm btn-light" onclick="addRow()">+</button>
+                                        <button type="button" class="btn btn-sm btn-light rowmaker" onclick="addRow()">+</button>
                                     </th>
                                 </tr>
                             </thead>
@@ -199,7 +199,14 @@
     @include('adminpages.ajax')
 
 
+<script>
+      document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        document.querySelector('.rowmaker').click();
+    }
+});
 
+    </script>
 
     <script>
     $(document).ready(function() {

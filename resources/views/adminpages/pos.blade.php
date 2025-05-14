@@ -379,7 +379,7 @@ function updateTotals() {
             return;
           }
 
-          $('#qty').val(product.quantity); // Set available quantity in the input
+          $('#qty').val(product.quantity); 
           $('#productName').val(product.item_name);
 
           var quantity = 1;
@@ -450,35 +450,45 @@ function updateTotals() {
       });
     });
 
-    document.getElementById('saleForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+      $(document).on('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        handleSaleFormSubmit(); 
+    }
+});
 
-      let productNames = document.querySelectorAll('[name="product_name[]"]');
-      let productQuantities = document.querySelectorAll('[name="product_quantity[]"]');
-      let purchaseRates = document.querySelectorAll('[name="purchase_rate[]"]');
-      let productRates = document.querySelectorAll('[name="product_rate[]"]');
-      let productSubtotals = document.querySelectorAll('[name="product_subtotal[]"]');
+document.getElementById('saleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleSaleFormSubmit();
+});
 
-      let items = [];
+function handleSaleFormSubmit() {
+    let productNames = document.querySelectorAll('[name="product_name[]"]');
+    let productQuantities = document.querySelectorAll('[name="product_quantity[]"]');
+    let purchaseRates = document.querySelectorAll('[name="purchase_rate[]"]');
+    let productRates = document.querySelectorAll('[name="product_rate[]"]');
+    let productSubtotals = document.querySelectorAll('[name="product_subtotal[]"]');
 
-      for (let i = 0; i < productNames.length; i++) {
+    let items = [];
+
+    for (let i = 0; i < productNames.length; i++) {
         let name = productNames[i].value.trim();
         if (name !== '') {
-          items.push({
-            product_name: name,
-            product_quantity: parseInt(productQuantities[i].value),
-            purchase_rate: parseFloat(purchaseRates[i].value),
-            product_rate: parseFloat(productRates[i].value),
-            product_subtotal: parseFloat(productSubtotals[i].value),
-          });
+            items.push({
+                product_name: name,
+                product_quantity: parseInt(productQuantities[i].value),
+                purchase_rate: parseFloat(purchaseRates[i].value),
+                product_rate: parseFloat(productRates[i].value),
+                product_subtotal: parseFloat(productSubtotals[i].value),
+            });
         }
-      }
+    }
 
-      let customerSelect = document.getElementById('smallSelect');
-      let customerId = customerSelect.value;
-      let customerName = customerSelect.options[customerSelect.selectedIndex].text;
+    let customerSelect = document.getElementById('smallSelect');
+    let customerId = customerSelect.value;
+    let customerName = customerSelect.options[customerSelect.selectedIndex].text;
 
-      let formData = {
+    let formData = {
         employee: document.querySelector('[name="employee"]').value,
         customer_id: customerId,
         customer_name: customerName,
@@ -494,44 +504,44 @@ function updateTotals() {
         amount_after_fix_discount: document.querySelector('[name="amount_after_fix_discount"]').value,
         subtotal: document.querySelector('[name="subtotal"]').value,
         items: items
-      };
+    };
 
-      fetch('/sales', {
+    fetch('/sales', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(formData)
-      })
-      .then(response => {
+    })
+    .then(response => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();
-      })
-      .then(data => {
+    })
+    .then(data => {
         Swal.fire({
-          title: 'Success!',
-          text: 'Sale submitted successfully!',
-          icon: 'success',
-          confirmButtonText: 'OK'
+            title: 'Success!',
+            text: 'Sale submitted successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
         }).then((result) => {
-          if (result.isConfirmed) {
-            document.getElementById('saleForm').reset(); 
-            $('#productTable tbody').empty();
-            updateTotals();
-          }
+            if (result.isConfirmed) {
+                document.getElementById('saleForm').reset(); 
+                $('#productTable tbody').empty();
+                updateTotals();
+            }
         });
-      })
-      .catch((error) => {
+    })
+    .catch((error) => {
         console.error('Error:', error);
         Swal.fire({
-          title: 'Error!',
-          text: 'There was an error submitting the sale.',
-          icon: 'error',
-          confirmButtonText: 'OK'
+            title: 'Error!',
+            text: 'There was an error submitting the sale.',
+            icon: 'error',
+            confirmButtonText: 'OK'
         });
-      });
     });
+}
 
     $(document).on('click', '.delete-row', function () {
       $(this).closest('tr').remove();

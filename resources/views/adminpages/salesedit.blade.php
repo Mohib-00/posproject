@@ -298,6 +298,13 @@
     @include('adminpages.js')
     @include('adminpages.ajax')
     <script>
+
+       $(document).on('keydown', function(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            $('#submiteditsale').click();
+        }
+    });
         $(document).ready(function () {
           let saleId = window.location.pathname.split('/').pop();  
       
