@@ -21,6 +21,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\saleController;
 use App\Http\Controllers\SaleReportController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StockReportContoller;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\UserAuthcontroller;
 use App\Http\Controllers\VendorController;
@@ -101,6 +102,7 @@ Route::group(['middleware' => ['admin.auth'], 'prefix' => 'admin'], function() {
     Route::get("salary", [SalaryController::class, "salarys"]);
     Route::get("sale_report", [SaleReportController::class, "salereport"]);
     Route::get("sale_items_detail/{id}", [SaleReportController::class, "saleitemsdetail"]);
+    Route::get("stock_report", [StockReportContoller::class, "stockreport"]);
 });
 //to open forgot password page
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
@@ -286,4 +288,6 @@ Route::get('/search-vouchers', [VoucherController::class, 'search'])->name('sear
 Route::post('/edit_voucher/{id}', [VoucherController::class, 'editvouchers'])->name('voucher.update');
 //to search sale
 Route::get('/sales', [SaleReportController::class, 'searchSales'])->name('sales.search');
+//to srch stock
+Route::get('/stock/search', [StockReportContoller::class, 'search'])->name('stock.search');
 

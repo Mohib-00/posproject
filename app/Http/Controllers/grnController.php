@@ -80,16 +80,21 @@ class grnController extends Controller
         $purchase->save();
     
         foreach ($productIds as $index => $productId) {
-            $product = Product::find($productId);
-            if ($product) {
-                $product->quantity = $quantities[$index];
-                $product->purchase_rate = $purchaseRates[$index];
-                $product->retail_rate = $retailRates[$index];
-                $product->single_purchase_rate = $UPRs[$index];
-                $product->single_retail_rate = $URRs[$index];
-                $product->save();
-            }
+    $product = Product::find($productId);
+    if ($product) {
+        $product->quantity += $quantities[$index];
+        $product->purchase_rate += $purchaseRates[$index];
+        $product->retail_rate += $retailRates[$index];
+
+        if ($product->quantity > 0) {
+            $product->single_purchase_rate = $product->purchase_rate / $product->quantity;
+            $product->single_retail_rate = $product->retail_rate / $product->quantity;
         }
+
+        $product->save();
+    }
+}
+
     
         $vendorAccount = AddAccount::where('sub_head_name', $purchase->vendors)->first();
     

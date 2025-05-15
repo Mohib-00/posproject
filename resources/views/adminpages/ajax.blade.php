@@ -724,7 +724,9 @@ function loadformatPage() {
        loadPage('/admin/sale_report', '/admin/sale_report');
    }
 
-
+ function loadstockeport() {
+       loadPage('/admin/stock_report', '/admin/stock_report');
+   }
 
    function loadsaleinvoicePage(element) {
     const saleId = element.getAttribute('data-sale-id');

@@ -285,6 +285,11 @@
                               <span class="sub-item">Sale Report</span>
                             </a>
                           </li>
+                           <li>
+                            <a href="/admin/stock_report" onclick="loadstockeport(); return false;">
+                              <span class="sub-item">Stock Report</span>
+                            </a>
+                          </li>
                         
                         </ul>
                       </div>
