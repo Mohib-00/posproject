@@ -79,7 +79,7 @@ class PurchaseController extends Controller
             $purchase->vendors = $request->vendors;
             $purchase->invoice_no = $request->invoice_no;
             $purchase->created_at = $request->created_at ? $request->created_at : now();
-            $purchase->updated_at = now();
+            $purchase->updated_at = $request->created_at ? $request->created_at : now();
     
             $purchase->remarks = $request->remarks;
     
@@ -116,7 +116,7 @@ class PurchaseController extends Controller
             $purchase->vendors = $request->vendors;
             $purchase->invoice_no = $request->invoice_no;
             $purchase->created_at = $request->created_at ? $request->created_at : now();
-            $purchase->updated_at = now();
+            $purchase->updated_at = $request->created_at ? $request->created_at : now();
     
             $purchase->remarks = $request->remarks;
     

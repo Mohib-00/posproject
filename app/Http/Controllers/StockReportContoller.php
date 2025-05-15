@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Purchase;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,7 +51,15 @@ public function search(Request $request)
     $query = Purchase::query()->where('stock_status', 'complete');
 
     if ($fromDate && $toDate) {
+        $fromDate = Carbon::parse($fromDate)->startOfDay();
+        $toDate = Carbon::parse($toDate)->endOfDay();
         $query->whereBetween('created_at', [$fromDate, $toDate]);
+    } elseif ($fromDate) {
+        $fromDate = Carbon::parse($fromDate)->startOfDay();
+        $query->whereDate('created_at', $fromDate);
+    } elseif ($toDate) {
+        $toDate = Carbon::parse($toDate)->endOfDay();
+        $query->whereDate('created_at', $toDate);
     }
 
     if ($vendor) {
@@ -78,6 +87,7 @@ public function search(Request $request)
         'userEmail' => $user->email,
     ]);
 }
+
 
 
 }
